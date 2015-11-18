@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -28,7 +29,7 @@ public class AnonFileController {
     }
 
     @RequestMapping("/upload")
-    public void upload(MultipartFile file, HttpServletResponse response) throws IOException {
+    public void upload(MultipartFile file, HttpServletResponse response, boolean permanant) throws Exception {
         File f = File.createTempFile("file", file.getOriginalFilename(), new File("public"));
         FileOutputStream fos = new FileOutputStream(f);
         fos.write(file.getBytes());
@@ -36,7 +37,22 @@ public class AnonFileController {
         AnonFile anonFile = new AnonFile();
         anonFile.originalName = file.getOriginalFilename();
         anonFile.name = f.getName();
+        anonFile.permanent = permanant;
         files.save(anonFile);
+
+        if (files.findByPermanent(false).size()>5){
+            List<AnonFile> fileList = (List<AnonFile>) files.findByPermanent(false);
+            AnonFile fileDelete = fileList.get(0);
+            if (!fileDelete.permanent){
+                File hateNaming = new File("public", fileDelete.name);
+                files.delete(fileDelete);
+                hateNaming.delete();
+            }
+        }
+
+
+
+
 
         response.sendRedirect("/");
     }
