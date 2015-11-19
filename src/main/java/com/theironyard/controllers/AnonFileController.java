@@ -29,7 +29,7 @@ public class AnonFileController {
     }
 
     @RequestMapping("/upload")
-    public void upload(MultipartFile file, HttpServletResponse response, boolean permanant) throws Exception {
+    public void upload(MultipartFile file, HttpServletResponse response, boolean permanant,String comment) throws Exception {
         File f = File.createTempFile("file", file.getOriginalFilename(), new File("public"));
         FileOutputStream fos = new FileOutputStream(f);
         fos.write(file.getBytes());
@@ -38,6 +38,7 @@ public class AnonFileController {
         anonFile.originalName = file.getOriginalFilename();
         anonFile.name = f.getName();
         anonFile.permanent = permanant;
+        anonFile.comment = comment;
         files.save(anonFile);
 
         if (files.findByPermanent(false).size()>5){

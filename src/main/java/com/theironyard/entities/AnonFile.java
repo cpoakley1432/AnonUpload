@@ -22,6 +22,9 @@ public class AnonFile {
     @Column(nullable = false)
     public boolean permanent;
 
+    @Column(nullable = false)
+    public String comment;
+
 
 
 
